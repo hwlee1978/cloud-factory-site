@@ -337,11 +337,12 @@
   @media (max-width: 768px) {
     .section { padding: 72px 20px; }
     .section-head { margin-bottom: 48px; gap: 20px; }
-    .section-title { font-size: clamp(32px, 9vw, 48px); }
+    .section-title { font-size: clamp(32px, 9vw, 48px); word-break: keep-all; overflow-wrap: normal; }
 
     /* Hero tuning */
     .hero { padding: 110px 20px 40px; min-height: auto; }
-    .hero h1 { font-size: clamp(36px, 11vw, 64px); margin-bottom: 24px; letter-spacing: -0.02em; word-break: keep-all; overflow-wrap: break-word; }
+    .hero h1 { font-size: clamp(32px, 9.5vw, 56px); margin-bottom: 24px; letter-spacing: -0.025em; word-break: keep-all; overflow-wrap: normal; hyphens: none; }
+    .hero h1 .line { display: block; white-space: nowrap; }
     .hero-tag { font-size: 10px; letter-spacing: 0.25em; margin-bottom: 24px; line-height: 1.5; }
     .hero-sub { font-size: 15px; margin-bottom: 32px; }
     .hero-cta-group { gap: 12px; }
@@ -352,7 +353,7 @@
 
     /* Brand cards */
     .brand-card { padding: 28px 24px; min-height: auto; }
-    .brand-name { font-size: clamp(40px, 12vw, 60px); }
+    .brand-name { font-size: clamp(40px, 11vw, 60px); white-space: nowrap; letter-spacing: -0.025em; }
     .brand-tagline { font-size: 15px; }
     .brand-desc { font-size: 13px; }
 
@@ -382,7 +383,7 @@
 
     /* Juicy Brix showcase */
     .showcase-hero { gap: 32px; margin-bottom: 40px; }
-    .showcase-hero-text h3 { font-size: clamp(32px, 9vw, 48px); margin-bottom: 18px; }
+    .showcase-hero-text h3 { font-size: clamp(30px, 8.5vw, 48px); margin-bottom: 18px; word-break: keep-all; overflow-wrap: normal; }
     .showcase-hero-text p { font-size: 14px; margin-bottom: 24px; }
     .showcase-hero-img { padding: 20px; }
     .feature-list { gap: 10px; }
@@ -432,13 +433,20 @@
   }
 
   @media (max-width: 480px) {
-    .hero h1 { font-size: clamp(38px, 13vw, 60px); line-height: 0.95; }
+    .hero h1 { font-size: clamp(30px, 9.5vw, 52px); line-height: 0.95; letter-spacing: -0.03em; }
+    .hero h1 .line { white-space: nowrap; }
+    .brand-name { font-size: clamp(34px, 10vw, 50px); }
     .avo-card { grid-template-columns: 80px 1fr; padding: 18px; gap: 14px; }
     .avo-img-wrap img { max-height: 170px; }
     .avo-name { font-size: 17px; }
     .avo-type { font-size: 9px; }
     .avo-head { margin-bottom: 10px; }
     .footer-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 360px) {
+    .hero h1 { font-size: 30px; letter-spacing: -0.035em; }
+    .brand-name { font-size: 34px; letter-spacing: -0.03em; }
   }
 </style>
 </head>
