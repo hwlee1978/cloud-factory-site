@@ -339,9 +339,9 @@
     .section-head { margin-bottom: 48px; gap: 20px; }
     .section-title { font-size: clamp(32px, 9vw, 48px); word-break: keep-all; overflow-wrap: normal; }
 
-    /* Hero tuning */
+    /* Hero tuning - hard cap based on typical mobile widths */
     .hero { padding: 110px 20px 40px; min-height: auto; }
-    .hero h1 { font-size: clamp(32px, 9.5vw, 56px); margin-bottom: 24px; letter-spacing: -0.025em; word-break: keep-all; overflow-wrap: normal; hyphens: none; }
+    .hero h1 { font-size: 44px; margin-bottom: 24px; letter-spacing: -0.03em; line-height: 0.95; }
     .hero h1 .line { display: block; white-space: nowrap; }
     .hero-tag { font-size: 10px; letter-spacing: 0.25em; margin-bottom: 24px; line-height: 1.5; }
     .hero-sub { font-size: 15px; margin-bottom: 32px; }
@@ -353,7 +353,7 @@
 
     /* Brand cards */
     .brand-card { padding: 28px 24px; min-height: auto; }
-    .brand-name { font-size: clamp(40px, 11vw, 60px); white-space: nowrap; letter-spacing: -0.025em; }
+    .brand-name { font-size: 48px; white-space: nowrap; letter-spacing: -0.03em; line-height: 0.95; }
     .brand-tagline { font-size: 15px; }
     .brand-desc { font-size: 13px; }
 
@@ -433,9 +433,8 @@
   }
 
   @media (max-width: 480px) {
-    .hero h1 { font-size: clamp(30px, 9.5vw, 52px); line-height: 0.95; letter-spacing: -0.03em; }
-    .hero h1 .line { white-space: nowrap; }
-    .brand-name { font-size: clamp(34px, 10vw, 50px); }
+    .hero h1 { font-size: 40px; }
+    .brand-name { font-size: 42px; }
     .avo-card { grid-template-columns: 80px 1fr; padding: 18px; gap: 14px; }
     .avo-img-wrap img { max-height: 170px; }
     .avo-name { font-size: 17px; }
@@ -444,9 +443,15 @@
     .footer-grid { grid-template-columns: 1fr; }
   }
 
-  @media (max-width: 360px) {
-    .hero h1 { font-size: 30px; letter-spacing: -0.035em; }
-    .brand-name { font-size: 34px; letter-spacing: -0.03em; }
+  @media (max-width: 380px) {
+    .hero h1 { font-size: 34px; letter-spacing: -0.035em; }
+    .brand-name { font-size: 36px; letter-spacing: -0.035em; }
+    .showcase-hero-text h3 { font-size: 32px; }
+  }
+
+  @media (max-width: 340px) {
+    .hero h1 { font-size: 30px; }
+    .brand-name { font-size: 32px; }
   }
 </style>
 </head>
@@ -1072,6 +1077,62 @@
     document.getElementById('navLinks').classList.remove('active');
     document.getElementById('navToggle').classList.remove('active');
   }
+
+  // Auto-fit large headings: if text overflows container, shrink font until it fits
+  function fitText(element, minSize) {
+    if (!element) return;
+    minSize = minSize || 16;
+    const parent = element.parentElement;
+    if (!parent) return;
+
+    // Reset to CSS-defined size first
+    element.style.fontSize = '';
+    let currentSize = parseFloat(window.getComputedStyle(element).fontSize);
+    const parentWidth = parent.clientWidth - parseFloat(window.getComputedStyle(parent).paddingLeft) - parseFloat(window.getComputedStyle(parent).paddingRight);
+
+    // Check each line (nowrap element) for overflow
+    const lines = element.querySelectorAll('.line, .brand-name, .cta-title');
+    const targets = lines.length > 0 ? lines : [element];
+
+    let safety = 40;
+    while (safety-- > 0) {
+      let fits = true;
+      // Check if scrollWidth > clientWidth on the element or any child line
+      if (element.scrollWidth > element.clientWidth + 1) fits = false;
+      for (const line of element.children) {
+        if (line.scrollWidth > line.clientWidth + 1) fits = false;
+      }
+      if (fits || currentSize <= minSize) break;
+      currentSize -= 1;
+      element.style.fontSize = currentSize + 'px';
+    }
+  }
+
+  function fitAllHeadings() {
+    // Only run on mobile widths where overflow is likely
+    if (window.innerWidth > 768) {
+      // Reset any inline sizes set previously
+      document.querySelectorAll('.hero h1, .brand-name, .cta-title, .showcase-hero-text h3').forEach(el => { el.style.fontSize = ''; });
+      return;
+    }
+    document.querySelectorAll('.hero h1').forEach(el => fitText(el, 24));
+    document.querySelectorAll('.brand-name').forEach(el => fitText(el, 26));
+    document.querySelectorAll('.showcase-hero-text h3').forEach(el => fitText(el, 22));
+    document.querySelectorAll('.cta-title').forEach(el => fitText(el, 22));
+  }
+
+  // Run after fonts load and on resize
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(fitAllHeadings);
+  } else {
+    window.addEventListener('load', fitAllHeadings);
+  }
+  window.addEventListener('resize', () => {
+    clearTimeout(window._fitTimer);
+    window._fitTimer = setTimeout(fitAllHeadings, 150);
+  });
+  // Initial attempt too
+  window.addEventListener('DOMContentLoaded', fitAllHeadings);
 </script>
 
 </body>
